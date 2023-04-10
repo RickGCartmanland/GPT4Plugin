@@ -28,8 +28,8 @@ let handleResponse (response: HttpResponseMessage) : Async<unit> =
             let! content = response.Content.ReadAsStringAsync() |> Async.AwaitTask
             let gpt4Response = Gpt4Response.Parse(content)
             let generatedText = gpt4Response.Choices.[0].Text
-            let trimmedText = generatedText.ToString().Trim()
-            printfn "Generated text: %s" trimmedText
+            let trimmedText = generatedText.ToString()
+            printfn "%s" trimmedText
         else
             printfn "Error: %s" response.ReasonPhrase
     }

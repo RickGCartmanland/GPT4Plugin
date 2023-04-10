@@ -17,17 +17,49 @@ This is a simple F# console application that uses the OpenAI API to generate tex
 
 ## Usage
 
+### Installing dependencies
+
+1. Install the .NET SDK for your operating system from the [.NET download page](https://dotnet.microsoft.com/download).
+2. Run `dotnet restore` in the project directory to install the required F# libraries.
+
+### Setting the environment variable
+
+- Windows:
+
+    ```
+    setx OPENAI_API_KEY "your_api_key"
+    ```
+
+- Linux and macOS:
+
+    ```
+    export OPENAI_API_KEY="your_api_key"
+    ```
+
+Replace "your_api_key" with your actual OpenAI API key.
+
+### Building and running the project
+
 1. Build the project with `dotnet build`.
 2. Run the application with the following command:
 
-    ```sh
-    dotnet run -- --api-key API_KEY --prompt PROMPT [--max-tokens MAX_TOKENS] [--n N]
+- Windows:
+
+    ```
+    dotnet run -- --api-key %OPENAI_API_KEY% --prompt "your_prompt" [--max-tokens max_tokens] [--n n]
     ```
 
-    - Replace `API_KEY` with your OpenAI API key. Alternatively, you can set the `OPENAI_API_KEY` environment variable.
-    - Replace `PROMPT` with the text prompt you want to use for the GPT-4 model.
-    - Optionally, set `MAX_TOKENS` to the maximum number of tokens you want in the generated text (default is 50).
-    - Optionally, set `N` to the number of generated text choices (default is 1).
+- Linux and macOS:
+
+    ```
+    dotnet run -- --api-key $OPENAI_API_KEY --prompt "your_prompt" [--max-tokens max_tokens] [--n n]
+    ```
+
+Replace the following placeholders:
+
+- "your_prompt": The text prompt you want to use for the GPT-4 model.
+- max_tokens: The maximum number of tokens you want in the generated text (default is 50).
+- n: The number of generated text choices (default is 1).
 
 ## Command-Line Arguments
 

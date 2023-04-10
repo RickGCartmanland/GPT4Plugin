@@ -2,6 +2,10 @@
 open Argu
 open GPT4Module
 
+let defaultPrompt = "Kérlek, mondj valamit érdekeset az emberi életről."
+let defaultMaxTokens = 500
+let defaultN = 1
+
 type CommandLineArgs =
     | [<MainCommand>] ApiKey of apiKey: string
     | Prompt of prompt: string
@@ -13,9 +17,9 @@ type CommandLineArgs =
             member this.Usage =
                 match this with
                 | ApiKey _ -> "Your OpenAI API key. Can be set as an environment variable (OPENAI_API_KEY)."
-                | Prompt _ -> "The text prompt for the GPT-4 model."
-                | MaxTokens _ -> "The maximum number of tokens in the generated text. Default is 50."
-                | N _ -> "The number of generated text choices. Default is 1."
+                | Prompt _ -> "The text prompt for the GPT-4 model. Default is: " + defaultPrompt
+                | MaxTokens _ -> "The maximum number of tokens in the generated text. Default is " + string defaultMaxTokens + "."
+                | N _ -> "The number of generated text choices. Default is " + string defaultN + "."
                 | Help -> "Display this help text."
 
 let printHelp (parser:ArgumentParser<CommandLineArgs>)=
@@ -36,12 +40,9 @@ let main args =
                 | Some apiKey -> apiKey
                 | None -> System.Environment.GetEnvironmentVariable("OPENAI_API_KEY")
             
-            let prompt = 
-                match parsedArgs.TryGetResult(Prompt) with
-                | Some prompt -> prompt
-                | None -> "Kérlek, mondj valamit érdekeset az emberi életről."
-            let maxTokens = parsedArgs.GetResult(MaxTokens, 50)
-            let n = parsedArgs.GetResult(N, 1)
+            let prompt = parsedArgs.GetResult(Prompt, defaultPrompt)
+            let maxTokens = parsedArgs.GetResult(MaxTokens, defaultMaxTokens)
+            let n = parsedArgs.GetResult(N, defaultN)
 
             GPT4Module.main apiKey prompt maxTokens n
         0

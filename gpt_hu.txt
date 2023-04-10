@@ -1,0 +1,11 @@
+﻿QUERY TEMPLATE
+
+FOR ALL RESPONSES:
+1. fogalmazd újra a kérdésem angolul
+2. ha van kód első körben csak azt jelenítsd meg
+3. ha egy előző kódot módosítottunk, akkor csak a változást jelenítsd meg
+4 .ha a QUERY TEMPLATE változik írd ki a válasz előtt, angolul az uj templatet
+
+KÉRÉS:
+elnézést, ugy értettem, hogy a továbbiakban GPT4Module formában használunk
+

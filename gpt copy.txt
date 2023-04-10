@@ -1,0 +1,55 @@
+﻿FOR ALL RESPONSES:
+1. fogalmazd újra a kérdésem angolul
+2. ha van kód első körben csak azt jelenítsd meg
+3. ha egy előző kódot módosítottunk, akkor csak a változást jelenítsd meg
+
+KÉRÉS:
+can you refactror the code. make it like an easy to understand for newcommers and look fancy
+
+CODE:
+
+open System
+open System.Net.Http
+open System.Text.Json
+open FSharp.Data
+
+type Gpt4Response = JsonProvider<"""{ "id": "", "object": "", "created": 0, "model": "", "usage": { "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0 }, "choices": [ { "text": "", "index": 0, "logprobs": null, "finish_reason": "" } ] }""">
+type RequestBody = { prompt : string; max_tokens : int; n : int }
+
+let apiKey = "MY_API_KEY"
+let baseUrl = "https://api.openai.com/v1/engines/text-davinci-002/completions"
+
+let prompt = "Translate the following English text to French: 'Hello, how are you?'"
+let maxTokens = 50
+let n = 1
+
+let client = new HttpClient()
+
+if String.IsNullOrEmpty(apiKey) then
+    printfn "Error: Please set the OPENAI_API_KEY environment variable."
+else
+    client.DefaultRequestHeaders.Authorization <- new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey)
+
+
+    let requestBody = { prompt = prompt; max_tokens = maxTokens; n = n }
+    let requestJson = JsonSerializer.Serialize(requestBody)
+
+    let postAsync (client: HttpClient) (url: string) (content: HttpContent) : Async<HttpResponseMessage> =
+        async {
+            return! client.PostAsync(url, content) |> Async.AwaitTask
+        }
+
+    async {
+        let! response = postAsync client baseUrl (new StringContent(requestJson, System.Text.Encoding.UTF8, "application/json"))
+        if response.IsSuccessStatusCode then
+            let! content = response.Content.ReadAsStringAsync() |> Async.AwaitTask
+            let gpt4Response = Gpt4Response.Parse(content)
+            let generatedText = gpt4Response.Choices.[0].Text
+            let trimmedText = generatedText.ToString().Trim()
+            printfn "Generated text: %s" trimmedText
+        else
+            printfn "Error: %s" response.ReasonPhrase
+    }
+    |> Async.RunSynchronously
+
+printfn "Bye."

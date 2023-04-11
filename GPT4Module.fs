@@ -22,16 +22,17 @@ let sendGpt4Request (client: HttpClient) (baseUrl: string) (requestBody: Request
         return response
     }
 
-let handleResponse (response: HttpResponseMessage) : Async<unit> =
+let handleResponse (response: HttpResponseMessage) : Async<string> =
     async {
         if response.IsSuccessStatusCode then
             let! content = response.Content.ReadAsStringAsync() |> Async.AwaitTask
             let gpt4Response = Gpt4Response.Parse(content)
             let generatedText = gpt4Response.Choices.[0].Text
             let trimmedText = generatedText.ToString()
-            printfn "%s" trimmedText
+            return trimmedText
         else
             printfn "Error: %s" response.ReasonPhrase
+            return ""
     }
 
 let main (apiKey: string) (prompt: string) (maxTokens: int) (n: int) : unit =
@@ -41,8 +42,11 @@ let main (apiKey: string) (prompt: string) (maxTokens: int) (n: int) : unit =
         let baseUrl = "https://api.openai.com/v1/engines/text-davinci-002/completions"
         let client = createAuthorizedHttpClient apiKey
         let requestBody = { prompt = prompt; max_tokens = maxTokens; n = n }
-        async {
-            let! response = sendGpt4Request client baseUrl requestBody
-            do! handleResponse response
-        }
-        |> Async.RunSynchronously
+        let result =
+            async {
+                let! response = sendGpt4Request client baseUrl requestBody
+                return! handleResponse response
+            }
+            |> Async.RunSynchronously
+        printfn "%s" result
+

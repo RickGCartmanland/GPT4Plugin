@@ -1,4 +1,6 @@
-﻿open System
+﻿module GPT4App
+
+open System
 open Argu
 open GPT4Module
 

@@ -1,19 +1,22 @@
 ﻿QUERY TEMPLATE
 
 FOR ALL RESPONSES:
-1.   //If the QUERY TEMPLATE changes, mention the new template (wihout the code) in English before the response in a code block
-2. Rephrase my question in English
-3. If there is code, display it first in the response
-4. If a previous code has been modified, only display the changes
+Rephrase my question in English
+If there is code, display it first in the response
+If a previous code has been modified, only display the changes
+
+Print README.md in code block
+//If the QUERY TEMPLATE changes, mention the new template (wihout the code) in English before the response in a code block
 
 REQUEST:
-Apologies, I meant that from now on we should use the GPT4Module format.
-Please print the main program
+a defaultokat tudnánk egy helyen kezelni, hogy ne kelljen mindenhol átírni, ha változik?
 
 CODE:
 open System
 open Argu
 open GPT4Module
+
+let defaultPrompt = "Kérlek, mondj valamit érdekeset az emberi életről."
 
 type CommandLineArgs =
     | [<MainCommand>] ApiKey of apiKey: string
@@ -26,7 +29,7 @@ type CommandLineArgs =
             member this.Usage =
                 match this with
                 | ApiKey _ -> "Your OpenAI API key. Can be set as an environment variable (OPENAI_API_KEY)."
-                | Prompt _ -> "The text prompt for the GPT-4 model."
+                | Prompt _ -> "The text prompt for the GPT-4 model. Default is: " + defaultPrompt
                 | MaxTokens _ -> "The maximum number of tokens in the generated text. Default is 50."
                 | N _ -> "The number of generated text choices. Default is 1."
                 | Help -> "Display this help text."
@@ -45,14 +48,12 @@ let main args =
             printHelp parser
         else
             let apiKey =
+            
                 match parsedArgs.TryGetResult(ApiKey) with
                 | Some apiKey -> apiKey
                 | None -> System.Environment.GetEnvironmentVariable("OPENAI_API_KEY")
             
-            let prompt = 
-                match parsedArgs.TryGetResult(Prompt) with
-                | Some prompt -> prompt
-                | None -> "Kérlek, mondj valamit érdekeset az emberi életről."
+            let prompt = parsedArgs.GetResult(Prompt, defaultPrompt)
             let maxTokens = parsedArgs.GetResult(MaxTokens, 50)
             let n = parsedArgs.GetResult(N, 1)
 
